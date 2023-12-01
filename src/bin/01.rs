@@ -1,15 +1,13 @@
 advent_of_code::solution!(1);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let lines = input.split("\n").collect::<Vec<&str>>();
+    let lines = input.split('\n').collect::<Vec<&str>>();
     let mut ans = 0;
 
-    for i in 0..(lines.len() - 1) {
-        let l = lines[i];
-        let first_digit = l.chars().into_iter().find(|c| c.is_ascii_digit()).unwrap();
+    for l in lines.iter().take(lines.len() - 1) {
+        let first_digit = l.chars().find(|c| c.is_ascii_digit()).unwrap();
         let last_digit = l
             .chars()
-            .into_iter()
             .rev()
             .find(|c| c.is_ascii_digit())
             .unwrap();
@@ -21,7 +19,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let lines = input.split("\n").collect::<Vec<&str>>();
+    let lines = input.split('\n').collect::<Vec<&str>>();
     let mut ans = 0;
     let numbers = vec![
         ("one", 1),
@@ -35,8 +33,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         ("nine", 9),
     ];
 
-    for i in 0..(lines.len() - 1) {
-        let l = lines[i];
+    for l in lines.iter().take(lines.len() - 1) {
         let mut first_digit = None;
         let mut last_digit = None;
 

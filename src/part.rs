@@ -97,5 +97,5 @@ macro_rules! part {
     () => {
         const PART_ONE: advent_of_code::Part = advent_of_code::part!(1);
         const PART_TWO: advent_of_code::Part = advent_of_code::part!(2);
-    }
+    };
 }
