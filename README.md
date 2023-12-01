@@ -5,19 +5,22 @@
 Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.rust-lang.org/).
 
 <!--- advent_readme_stars table --->
+
 ## 2023 Results
 
-| Day | Part 1 | Part 2 |
-| :---: | :---: | :---: |
-| [Day 1](https://adventofcode.com/2023/day/1) | ⭐ | ⭐ |
+|                     Day                      | Part 1 | Part 2 |
+| :------------------------------------------: | :----: | :----: |
+| [Day 1](https://adventofcode.com/2023/day/1) |   ⭐   |   ⭐   |
+
 <!--- advent_readme_stars table --->
 
 <!--- benchmarking table --->
+
 ## Benchmarks
 
-| Day | Part 1 | Part 2 |
-| :---: | :---: | :---:  |
-| [Day 1](./src/bin/01.rs) | `32.2µs` / `16 KiB` | `43.3µs` / `16.6 KB` |
+|           Day            |      Part 1       |        Part 2        |
+| :----------------------: | :---------------: | :------------------: |
+| [Day 1](./src/bin/01.rs) | `34.1µs` `16 KiB` | `44.7µs` / `16.6 KB` |
 
 **Total time: 0.08ms**
 
@@ -222,11 +225,3 @@ Do you have aoc-specific crate recommendations? [Share them!](https://github.com
 
 [^1]: The session cookie might expire after a while (~1 month) which causes the downloads to fail. To fix this issue, refresh the `.adventofcode.session` file.
 [^2]: The session cookie might expire after a while (~1 month) which causes the automated workflow to fail. To fix this issue, refresh the AOC_SESSION secret.
-[^3]:
-    <img src="https://user-images.githubusercontent.com/1682504/198838369-453dc22c-c645-4803-afe0-fc50d5a3f00c.png" alt="Set a breakpoint" width="450" />
-
-[^4]:
-    <img alt="Run debugger" src="https://user-images.githubusercontent.com/1682504/198838372-c89369f6-0d05-462e-a4c7-8cd97b0912e6.png" width="450" />
-
-[^5]:
-    <img alt="Inspect debugger state" src="https://user-images.githubusercontent.com/1682504/198838373-36df6996-23bf-4757-9335-0bc4c1db0276.png" width="450" />
