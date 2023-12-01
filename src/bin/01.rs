@@ -6,11 +6,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 
     for l in lines.iter().take(lines.len() - 1) {
         let first_digit = l.chars().find(|c| c.is_ascii_digit()).unwrap();
-        let last_digit = l
-            .chars()
-            .rev()
-            .find(|c| c.is_ascii_digit())
-            .unwrap();
+        let last_digit = l.chars().rev().find(|c| c.is_ascii_digit()).unwrap();
 
         ans += first_digit.to_digit(10).unwrap() * 10 + last_digit.to_digit(10).unwrap();
     }
