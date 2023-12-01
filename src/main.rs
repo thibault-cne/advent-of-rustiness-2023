@@ -1,12 +1,6 @@
 use advent_of_code::template::commands::{all, download, read, scaffold, solve};
 use args::{parse, AppArguments};
 
-// This is for heap profiling. It's not used by default, but can be enabled by
-// passing the `--dhat-heap` flag to the binary.
-#[cfg(feature = "dhat-heap")]
-#[global_allocator]
-static ALLOC: dhat::Alloc = dhat::Alloc;
-
 mod args {
     use std::process;
 

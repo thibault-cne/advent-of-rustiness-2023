@@ -69,9 +69,8 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "dhat"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f2aaf837aaf456f6706cb46386ba8dffd4013a757e36f4ea05c20dd46b209a3"
+version = "0.3.3"
+source = "git+https://github.com/thibault-cne/dhat-rs.git?tag=0.3.3#d0429a425d6a123af9250f6b8675d65a802bcb67"
 dependencies = [
  "backtrace",
  "lazy_static",

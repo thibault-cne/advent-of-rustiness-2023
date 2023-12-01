@@ -11,9 +11,8 @@ publish = false
 doctest = false
 
 [features]
-dhat-heap = []
 test_lib = []
 
 [dependencies]
-dhat = "0.3.2"
+dhat = { git = "https://github.com/thibault-cne/dhat-rs.git", tag = "0.3.3" }
 pico-args = "0.5.0"
