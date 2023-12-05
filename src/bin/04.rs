@@ -55,7 +55,13 @@ pub fn part_one(input: &str) -> Option<u32> {
 
     let sum = cards
         .into_iter()
-        .map(|c| 2_f64.powi(c.result() as i32 - 1) as u32)
+        .map(|c| {
+            if c.result() == 0 {
+                0
+            } else {
+                1 << (c.result() - 1)
+            }
+        })
         .sum();
 
     Some(sum)
