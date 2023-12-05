@@ -16,5 +16,6 @@ test_lib = []
 [dependencies]
 byte-unit = "5.0.3"
 dhat = { git = "https://github.com/thibault-cne/dhat-rs.git", tag = "0.3.3" }
+indicatif = "0.17.7"
 nom = "7.1.3"
 pico-args = "0.5.0"

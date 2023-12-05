@@ -3,77 +3,50 @@ advent_of_code::solution!(5);
 use std::ops::Range;
 
 use nom::{
-    bytes::complete::tag,
-    character::complete::{alpha1, digit1, newline, space1},
-    multi::{many0, many_till, separated_list0},
-    sequence::{preceded, separated_pair, terminated},
+    bytes::complete::{tag, take_until},
+    character::complete::{self, line_ending, space1},
+    multi::{many0, many1, separated_list0},
+    sequence::{preceded, separated_pair, tuple},
     IResult,
 };
 
 pub fn part_one(input: &str) -> Option<u64> {
     let (remaining, seeds) = Seeds::parse(input).unwrap();
     let (_, map) = many0(Map::parse)(remaining).unwrap();
-    let mut ans = u64::MAX;
 
-    for seed in seeds.0 {
-        let mut name = "seed";
-        let mut value = seed;
+    let location = seeds
+        .0
+        .into_iter()
+        .map(|seed| map.iter().fold(seed, |seed, map| map.translate(seed)))
+        .min()
+        .unwrap();
 
-        loop {
-            if name == "location" {
-                break;
-            }
-
-            let mapping = map.iter().find(|m| m.source == name).unwrap();
-
-            if let Some((src, dst)) = mapping.mapping.iter().find(|(src, _)| src.contains(&value)) {
-                value = dst.start + (value - src.start);
-            }
-            name = &mapping.destination;
-        }
-
-        if value < ans {
-            ans = value;
-        }
-    }
-
-    Some(ans)
+    Some(location)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
     let (remaining, seeds) = SeedsRange::parse(input).unwrap();
     let (_, map) = many0(Map::parse)(remaining).unwrap();
 
-    let location = map.iter().find(|m| m.destination == "location").unwrap();
-    let max = location
+    let max = map
+        .iter()
+        .last()
+        .unwrap()
         .mapping
         .iter()
         .map(|(_, dst)| dst.end)
         .max()
         .unwrap();
 
-    let ans = (0..max).find(|&i| {
-        let mut name = "location";
-        let mut value = i;
-
-        loop {
-            if name == "seed" {
-                break;
-            }
-
-            let mapping = map.iter().find(|m| m.destination == name).unwrap();
-
-            if let Some((src, dst)) = mapping.mapping.iter().find(|(_, dst)| dst.contains(&value)) {
-                value = src.start + (value - dst.start);
-            }
-
-            name = &mapping.source;
-        }
-
-        seeds.0.iter().any(|s| s.contains(&value))
+    let location = (0..max).find(|&loc| {
+        let seed = map
+            .iter()
+            .rev()
+            .fold(loc, |loc, map| map.rev_translate(loc));
+        seeds.0.iter().any(|s| s.contains(&seed))
     });
 
-    ans
+    location
 }
 
 #[derive(Debug)]
@@ -81,20 +54,10 @@ struct Seeds(Vec<u64>);
 
 impl Seeds {
     fn parse(input: &str) -> IResult<&str, Self> {
-        let (remaining, seeds) = terminated(
-            preceded(tag("seeds: "), separated_list0(space1, digit1)),
-            tag("\n\n"),
-        )(input)?;
+        let (remaining, seeds) =
+            preceded(tag("seeds: "), separated_list0(space1, complete::u64))(input)?;
 
-        Ok((
-            remaining,
-            Self(
-                seeds
-                    .into_iter()
-                    .map(|s| s.parse::<u64>().unwrap())
-                    .collect(),
-            ),
-        ))
+        Ok((remaining, Self(seeds)))
     }
 }
 
@@ -103,12 +66,12 @@ struct SeedsRange(Vec<Range<u64>>);
 
 impl SeedsRange {
     fn parse(input: &str) -> IResult<&str, Self> {
-        let (remaining, seeds) = terminated(
-            preceded(
-                tag("seeds: "),
-                separated_list0(space1, separated_pair(digit1, space1, digit1)),
+        let (remaining, seeds) = preceded(
+            tag("seeds: "),
+            separated_list0(
+                space1,
+                separated_pair(complete::u64, tag(" "), complete::u64),
             ),
-            tag("\n\n"),
         )(input)?;
 
         Ok((
@@ -116,12 +79,7 @@ impl SeedsRange {
             Self(
                 seeds
                     .into_iter()
-                    .map(|s| {
-                        let start = s.0.parse::<u64>().unwrap();
-                        let length = s.1.parse::<u64>().unwrap();
-
-                        start..(start + length)
-                    })
+                    .map(|(start, length)| start..(start + length))
                     .collect(),
             ),
         ))
@@ -130,41 +88,52 @@ impl SeedsRange {
 
 #[derive(Debug)]
 struct Map {
-    source: String,
-    destination: String,
     mapping: Vec<(Range<u64>, Range<u64>)>,
 }
 
 impl Map {
+    fn translate(&self, source: u64) -> u64 {
+        if let Some((src, dst)) = self.mapping.iter().find(|(src, _)| src.contains(&source)) {
+            dst.start + (source - src.start)
+        } else {
+            source
+        }
+    }
+
+    fn rev_translate(&self, destination: u64) -> u64 {
+        if let Some((src, dst)) = self
+            .mapping
+            .iter()
+            .find(|(_, dst)| dst.contains(&destination))
+        {
+            src.start + (destination - dst.start)
+        } else {
+            destination
+        }
+    }
+
     fn parse(input: &str) -> IResult<&str, Self> {
-        let (remaining, (source, destination)) =
-            terminated(separated_pair(alpha1, tag("-to-"), alpha1), tag(" map:\n"))(input)?;
+        let (remaining, _) = take_until("map:")(input)?;
 
-        let list = separated_list0(space1, digit1);
-        let (remaining, (mapping, _)) = many_till(terminated(list, newline), newline)(remaining)?;
-
-        let mapping = mapping
-            .into_iter()
-            .map(|v| {
-                let src_start = v[1].parse::<u64>().unwrap();
-                let dst_start = v[0].parse::<u64>().unwrap();
-                let length = v[2].parse::<u64>().unwrap();
-
-                (
-                    src_start..(src_start + length),
-                    dst_start..(dst_start + length),
-                )
-            })
-            .collect();
-
-        Ok((
+        let line = tuple((
+            complete::u64,
+            preceded(tag(" "), complete::u64),
+            preceded(tag(" "), complete::u64),
+        ));
+        let (remaining, mapping) = preceded(tag("map:"), many1(preceded(line_ending, line)))(
             remaining,
-            Self {
-                source: source.to_string(),
-                destination: destination.to_string(),
-                mapping,
-            },
-        ))
+        )
+        .map(|(remaining, mapping)| {
+            (
+                remaining,
+                mapping
+                    .into_iter()
+                    .map(|(end, start, length)| (start..(start + length), end..(end + length)))
+                    .collect::<Vec<_>>(),
+            )
+        })?;
+
+        Ok((remaining, Self { mapping }))
     }
 }
 
@@ -190,9 +159,7 @@ mod tests {
         let input = "light-to-temperature map:
 45 77 23
 81 45 19
-68 64 13
-
-";
+68 64 13";
 
         let map = Map::parse(input);
 
@@ -203,9 +170,7 @@ mod tests {
 
     #[test]
     fn test_seeds() {
-        let input = "seeds: 1 2 3 4 5
-
-";
+        let input = "seeds: 1 2 3 4 5";
         let seeds = Seeds::parse(input);
 
         assert!(seeds.is_ok());
