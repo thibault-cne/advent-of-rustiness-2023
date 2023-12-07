@@ -223,7 +223,7 @@ impl<T> std::cmp::PartialEq for Hand<T> {
 
 impl<T> std::cmp::PartialOrd for Hand<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.hand.partial_cmp(&other.hand)
+        Some(self.hand.cmp(&other.hand))
     }
 }
 
