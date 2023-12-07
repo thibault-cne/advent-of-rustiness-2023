@@ -40,28 +40,31 @@ pub fn part_two(input: &str) -> Option<u64> {
     Some(ans)
 }
 
-trait Parts {
-    fn part() -> Part;
+macro_rules! parts {
+    ($($part:ident),*) => {
+        trait Parts {
+            fn part() -> Part;
+        }
+
+        $(
+            struct $part;
+
+            impl Parts for $part {
+                fn part() -> Part {
+                    Part::$part
+                }
+            }
+        )*
+
+        enum Part {
+            $($part),*
+        }
+    };
 }
 
-struct PartOne;
-struct PartTwo;
-
-impl Parts for PartOne {
-    fn part() -> Part {
-        Part::One
-    }
-}
-
-impl Parts for PartTwo {
-    fn part() -> Part {
-        Part::Two
-    }
-}
-
-enum Part {
-    One,
-    Two,
+parts! {
+    PartOne,
+    PartTwo
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Copy, Clone)]
@@ -94,8 +97,8 @@ impl CardPart {
         }
 
         match part {
-            Part::One => parse!(One, CardOne),
-            Part::Two => parse!(Two, CardTwo),
+            Part::PartOne => parse!(One, CardOne),
+            Part::PartTwo => parse!(Two, CardTwo),
         }
     }
 }
@@ -136,8 +139,8 @@ enum HandType {
 impl HandType {
     fn parse(input: Vec<CardPart>, part: Part) -> HandType {
         match part {
-            Part::One => Self::parse_one(input),
-            Part::Two => Self::parse_two(input),
+            Part::PartOne => Self::parse_one(input),
+            Part::PartTwo => Self::parse_two(input),
         }
     }
 
