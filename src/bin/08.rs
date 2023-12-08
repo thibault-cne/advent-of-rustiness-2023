@@ -43,7 +43,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         let mut first_z = None;
 
         loop {
-            while steps == 0 || !current.ends_with("Z") {
+            while steps == 0 || !current.ends_with('Z') {
                 steps += 1;
                 match directions[index] {
                     Direction::Left => current = &map[current].0,
@@ -70,14 +70,14 @@ pub fn part_two(input: &str) -> Option<u64> {
 
 fn lcm_vec(vec: &[usize]) -> usize {
     let mut result = vec[0];
-    for i in 1..vec.len() {
-        result = lcm(result, vec[i]);
+    for &item in vec.iter().skip(1) {
+        result = lcm(result, item);
     }
-    return result;
+    result
 }
 
 fn lcm(a: usize, b: usize) -> usize {
-    return a * (b / gcd(a, b));
+    a * (b / gcd(a, b))
 }
 
 fn gcd(mut a: usize, mut b: usize) -> usize {
@@ -85,25 +85,19 @@ fn gcd(mut a: usize, mut b: usize) -> usize {
         return a;
     }
     if b > a {
-        let temp = a;
-        a = b;
-        b = temp;
+        std::mem::swap(&mut a, &mut b);
     }
     while b > 0 {
-        let temp = a;
-        a = b;
-        b = temp % b;
+        std::mem::swap(&mut a, &mut b);
+        b %= a;
     }
-    return a;
+    a
 }
 
 fn parse_directions(input: &str) -> IResult<&str, Vec<Direction>> {
     let (rem, directions) = terminated(is_a("LR"), many1(complete::newline))(input)?;
 
-    Ok((
-        rem,
-        directions.chars().map(|c| Direction::from(c)).collect(),
-    ))
+    Ok((rem, directions.chars().map(Direction::from).collect()))
 }
 
 fn parse_map(input: &str) -> IResult<&str, HashMap<&str, (&str, &str)>> {
